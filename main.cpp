@@ -18,7 +18,7 @@ using std::isdigit;
 
 float doubleRectIntegralMidPt(int,int,float[2],float[2]);
 
-float executeFunction(string function){
+double executeFunction(string function){
 
     int paranthBoth = function.find(")(");
     int paranthOpen = function.find("(");
@@ -44,11 +44,11 @@ float executeFunction(string function){
     else{
 
         vector<char> operations;
-        vector<int> numbers;
+        vector<double> numbers;
 
         // Gets our operations '+', '-', '/', etc
         for(char& c: function){
-            if(!isdigit(c)){
+            if(!isdigit(c) && c != '.'){
                 operations.push_back(c);
                 c = ' ';
             }
@@ -56,11 +56,16 @@ float executeFunction(string function){
 
         // Gets our numbers 234, 12, 536
         int temp = 0;
-        std::stringstream ss(function);
-        while(ss){
-            ss >> temp;
-            if(ss){numbers.push_back(temp);}
+
+        function+= " ";// Adds an " " to the end so that we can use it as a marker for the end of the number
+        while(function != ""){
+            int ind = function.find(' '); // Looks for the end of our number by looking for our " " end marker
+            string tempVal = function.substr(0, ind); // Takes a sub string containing our number
+            double val = stod(tempVal); // Converts our substring to a double
+            numbers.push_back(val); // Pushes our double to our vector
+            function.erase(0,ind+1); // Removes the number from function to keep searching
         }
+ 
 
         // Multiplication and Division
         vector<char>::iterator opStart = operations.begin();
@@ -68,8 +73,8 @@ float executeFunction(string function){
         int index = 0;
         while(opStart!=opEnd){
             if(*(opStart) == '*'){
-                int num1 = numbers.at(index);
-                int num2 = numbers.at(index+1);
+                double num1 = numbers.at(index);
+                double num2 = numbers.at(index+1);
 
                 operations.erase(opStart);
                 numbers.erase(numbers.begin() + index+1);
@@ -79,8 +84,8 @@ float executeFunction(string function){
 
             }
             else if(*(opStart) == '/'){
-                int num1 = numbers.at(index);
-                int num2 = numbers.at(index+1);
+                double num1 = numbers.at(index);
+                double num2 = numbers.at(index+1);
 
                 operations.erase(opStart);
                 numbers.erase(numbers.begin() + index+1);
@@ -99,8 +104,8 @@ float executeFunction(string function){
         index = 0;
         while(opStart!=opEnd){
             if(*(opStart) == '+'){
-                int num1 = numbers.at(index);
-                int num2 = numbers.at(index+1);
+                double num1 = numbers.at(index);
+                double num2 = numbers.at(index+1);
 
                 operations.erase(opStart);
                 numbers.erase(numbers.begin() + index+1);
@@ -109,8 +114,8 @@ float executeFunction(string function){
                 index--;
             }
             else if(*(opStart) == '-'){
-                int num1 = numbers.at(index);
-                int num2 = numbers.at(index+1);
+                double num1 = numbers.at(index);
+                double num2 = numbers.at(index+1);
 
                 operations.erase(opStart);
                 numbers.erase(numbers.begin() + index+1);
@@ -132,8 +137,8 @@ string insertMath(string function, float x, float y){
     int yindex = 0;
 
     while(xindex = function.find('x') <= 0){
+        function.erase(xindex);
     }
-
 }
 
 int main(int argc, char const *argv[])
@@ -146,12 +151,9 @@ int main(int argc, char const *argv[])
 
     doubleRectIntegralMidPt(4,2,xRange, yRange);
 
-   string func = "(5+6)(35*8+2)(1+8)";
+   string func = "5+6.2";
 
-   cout << executeFunction(func);
-
-
-
+   cout << executeFunction(func) << endl;
 
     return 0;
 }
